@@ -1,13 +1,17 @@
 import { Module } from '@nestjs/common';
 import { BookingModule } from './booking/booking.module';
-import { sequelize } from '../database/sequelize/sequelize.provider';
+import { SequelizeModule } from '@nestjs/sequelize';
 
 @Module({
-  imports: [BookingModule],
+  imports: [BookingModule, SequelizeModule.forRoot({
+    dialect: 'postgres',
+    host: 'localhost',
+    port: 5432,
+    username: 'postgres',
+    password: 'postgres',
+    database: 'bms',
+    autoLoadModels: true,
+    synchronize: true,
+  })],
 })
-export class AppModule {
-  constructor() {
-    // init sequelize connection on module init (or in main.ts)
-    sequelize.sync({ alter: false }); // for dev you may use alter:true, but use migrations in prod
-  }
-}
+export class AppModule {}

@@ -1,7 +1,27 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'path';
+import { existsSync } from 'fs';
 import { BookingGatewayController } from './booking/booking.controller';
+import { HealthController } from './health/health.controller';
+
+function resolveProtoPath(): string {
+  const fromEnv = process.env.PROTO_PATH;
+  if (fromEnv && existsSync(fromEnv)) return fromEnv;
+
+  const candidates = [
+    // Docker: WORKDIR /app, proto copied to /app/proto
+    join(process.cwd(), 'proto/booking.proto'),
+    // Monorepo dev: cwd is api-gateway, shared proto one level up
+    join(process.cwd(), '../proto/booking.proto'),
+    // Compiled dist: __dirname = /app/dist, shared proto at /app/proto
+    join(__dirname, '../../proto/booking.proto'),
+  ];
+  for (const p of candidates) {
+    if (existsSync(p)) return p;
+  }
+  return join(process.cwd(), 'proto/booking.proto');
+}
 
 @Module({
   imports: [
@@ -11,14 +31,12 @@ import { BookingGatewayController } from './booking/booking.controller';
         transport: Transport.GRPC,
         options: {
           package: 'booking',
-          // In Docker, WORKDIR is /app and Dockerfile copies proto -> /app/proto
-          // process.cwd() === '/app' at runtime. This works in dev and prod.
-          protoPath: join(process.cwd(), 'proto/booking.proto'),
+          protoPath: resolveProtoPath(),
           url: 'localhost:50051',
         },
       },
-    ]),
+    ])
   ],
-  controllers: [BookingGatewayController],
+  controllers: [BookingGatewayController,HealthController],
 })
 export class AppModule {}

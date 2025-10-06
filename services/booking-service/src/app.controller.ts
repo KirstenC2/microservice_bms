@@ -1,18 +1,12 @@
-import { Controller } from '@nestjs/common';
-import { GrpcMethod } from '@nestjs/microservices';
-import { BookingGrpcService } from './booking/services/booking.service';
+import { Controller, Get } from '@nestjs/common';
+import { AppService } from './app.service';
 
 @Controller()
-export class BookingController {
-  constructor(private readonly bookingSvc: BookingGrpcService) {}
+export class AppController {
+  constructor(private readonly appService: AppService) {}
 
-  @GrpcMethod('BookingService', 'CreateBooking')
-  create(data: any) {
-    return this.bookingSvc.CreateBooking(data);
-  }
-
-  @GrpcMethod('BookingService', 'FindAll')
-  findAll() {
-    return this.bookingSvc.FindAll();
+  @Get()
+  getHello(): string {
+    return this.appService.getHello();
   }
 }

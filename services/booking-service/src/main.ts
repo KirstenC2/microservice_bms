@@ -10,9 +10,7 @@ async function bootstrap() {
       transport: Transport.GRPC,
       options: {
         package: 'booking',
-        // When built, __dirname is /app/dist/src. The copied proto is at /app/proto
-        // so go two levels up to reach /app, then into proto.
-        protoPath: join(__dirname, '../../proto/booking.proto'),
+        protoPath: join(process.cwd(), '../../proto/booking.proto'),
         url: '0.0.0.0:50051',
       },
     },
