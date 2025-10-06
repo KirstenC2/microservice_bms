@@ -12,6 +12,8 @@ message Empty {}
 message CreateBookingRequest {
   string customerName = 1;
   string roomNumber = 2;
+  string startAt = 3; // ISO8601 or RFC3339 timestamp string
+  string endAt = 4;   // ISO8601 or RFC3339 timestamp string
 }
 
 message BookingResponse {

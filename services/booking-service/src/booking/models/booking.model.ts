@@ -1,22 +1,39 @@
-import { Table, Column, Model, DataType } from 'sequelize-typescript';
+import { Optional } from 'sequelize'
+import { Table, Column, Model, DataType } from 'sequelize-typescript'
+
+interface BookingAttributes {
+  id: number
+  title: string
+  startAt: Date
+  endAt: Date
+  room: string
+  metadata?: any
+  readonly createdAt?: Date
+  readonly updatedAt?: Date
+}
+
+type BookingCreationAttributes = Optional<
+  BookingAttributes,
+  'id' | 'metadata' | 'createdAt' | 'updatedAt'
+>
 
 @Table({ tableName: 'bookings', timestamps: true })
-export class Booking extends Model<Booking> {
+export class Booking extends Model<BookingAttributes, BookingCreationAttributes> {
   @Column({ type: DataType.INTEGER, primaryKey: true, autoIncrement: true })
-  declare id: number;
+  declare id: number
 
   @Column({ allowNull: false, type: DataType.STRING })
-  title!: string;
+  declare title: string
 
   @Column({ allowNull: false, type: DataType.DATE })
-  startAt!: Date;
+  declare startAt: Date
 
   @Column({ allowNull: false, type: DataType.DATE })
-  endAt!: Date;
+  declare endAt: Date
 
   @Column({ allowNull: false, type: DataType.STRING })
-  room!: string;
+  declare room: string
 
   @Column({ type: DataType.JSONB, allowNull: true })
-  metadata?: any;
+  declare metadata?: any
 }
