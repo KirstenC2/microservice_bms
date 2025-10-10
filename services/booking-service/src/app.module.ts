@@ -5,7 +5,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 @Module({
   imports: [BookingModule, SequelizeModule.forRoot({
     dialect: 'postgres',
-    host: 'localhost',
+    host: 'postgres',
     port: 5432,
     username: 'postgres',
     password: 'postgres',

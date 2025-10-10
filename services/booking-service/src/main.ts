@@ -10,7 +10,7 @@ async function bootstrap() {
       transport: Transport.GRPC,
       options: {
         package: 'booking',
-        protoPath: join(process.cwd(), '../../proto/booking.proto'),
+        protoPath: join(process.cwd(), './proto/booking.proto'),
         url: '0.0.0.0:50051',
       },
     },

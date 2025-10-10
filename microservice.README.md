@@ -14,16 +14,11 @@ This monorepo is structured as follows:
 - proto
 
 ## Architecture
-```mermaid
-flowchart LR
-  FE[Frontend (HTTP)] -->|HTTP| APIGW[API Gateway (NestJS + gRPC)]
-  APIGW -->|gRPC| BOOK[Booking Service (Sequelize + PostgreSQL)]
-  APIGW -->|gRPC| FUT[Future Services (e.g., Device Mgmt)]
-```
-- **API Gateway**: Translates HTTP to gRPC and routes to backend services.
-- **Booking Service**: Business logic via Sequelize ORM, persists to PostgreSQL.
-- **Future Services**: Additional gRPC microservices added independently.
-
+**Architecture Summary:**
+- **Frontend (HTTP)** communicates with the **API Gateway** using HTTP.
+- **API Gateway (NestJS)** exposes REST APIs to the frontend and uses **gRPC** to talk to backend microservices.
+- **Booking Service** handles all booking-related business logic and database operations.
+- Future services (e.g., Device Management) can easily be added and connected via gRPC.
 
 ## API Gateway
 ### What is API Gateway?

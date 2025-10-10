@@ -15,7 +15,7 @@ function resolveProtoPath(): string {
     // Monorepo dev: cwd is api-gateway, shared proto one level up
     join(process.cwd(), '../proto/booking.proto'),
     // Compiled dist: __dirname = /app/dist, shared proto at /app/proto
-    join(__dirname, '../../proto/booking.proto'),
+    join(__dirname, './proto/booking.proto'),
   ];
   for (const p of candidates) {
     if (existsSync(p)) return p;
@@ -32,7 +32,7 @@ function resolveProtoPath(): string {
         options: {
           package: 'booking',
           protoPath: resolveProtoPath(),
-          url: 'localhost:50051',
+          url: 'booking-service:50051',
         },
       },
     ])
