@@ -1,6 +1,16 @@
 version: "3.8"
 services:
 
+  consul:
+    image: consul:1.15
+    container_name: consul
+    ports:
+      - "8500:8500" # Web UI
+      - "8600:8600/udp" # DNS
+    command: agent -server -bootstrap -ui -client=0.0.0.0
+    volumes:
+      - consul-data:/consul/data
+
   nginx:
     image: nginx:latest
     container_name: nginx-gateway
@@ -51,13 +61,14 @@ services:
       - "50051:50051"
     depends_on:
       - postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: bms
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_DIALECT: postgres
-      
+    env_file:
+      - ../services/booking-service/.env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:50051/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   pgdata:
+  consul-data:

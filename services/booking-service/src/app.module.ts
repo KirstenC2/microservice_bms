@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { BookingModule } from './booking/booking.module';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { ConsulService } from './consul/consul.service';
 
 @Module({
   imports: [BookingModule, SequelizeModule.forRoot({
@@ -13,5 +14,6 @@ import { SequelizeModule } from '@nestjs/sequelize';
     autoLoadModels: true,
     synchronize: true,
   })],
+  providers: [ConsulService],
 })
 export class AppModule {}
