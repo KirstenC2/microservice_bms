@@ -57,6 +57,8 @@ export class BillingController {
         metadata: invoice.metadata,
       };
 
+      
+
       if (invoice.payments && invoice.payments.length > 0) {
         response.payments = invoice.payments.map(payment => ({
           paymentId: payment.paymentId,
@@ -70,7 +72,23 @@ export class BillingController {
         }));
       }
 
-      return response;
+      const transformedInvoice = invoice.get({ plain: true });
+
+      return {
+        invoiceId: transformedInvoice.invoiceId,
+        bookingId: transformedInvoice.bookingId,
+        customerId: transformedInvoice.customerId,
+        customerEmail: transformedInvoice.customerEmail,
+        amount: Number(transformedInvoice.amount),
+        currency: transformedInvoice.currency,
+        status: transformedInvoice.status,
+        dueDate: transformedInvoice.dueDate ? new Date(transformedInvoice.dueDate).toISOString() : null,
+        issuedDate: transformedInvoice.issuedDate ? new Date(transformedInvoice.issuedDate).toISOString() : null,
+        createdAt: transformedInvoice.createdAt ? new Date(transformedInvoice.createdAt).toISOString() : null,
+        updatedAt: transformedInvoice.updatedAt ? new Date(transformedInvoice.updatedAt).toISOString() : null,
+        metadata: transformedInvoice.metadata || {},
+      };  
+
     } catch (error) {
       console.error('Error in GetInvoice:', error);
       throw error;
