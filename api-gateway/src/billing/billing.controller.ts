@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, OnModuleInit, Logger } from '@nestjs/common';
+import { Controller, Get, Post, Body, OnModuleInit, Logger, Query } from '@nestjs/common';
 import { ClientGrpc, ClientOptions, Transport, ClientProxyFactory } from '@nestjs/microservices';
 import { lastValueFrom, retry, timeout } from 'rxjs';
 import { join } from 'path';
@@ -7,7 +7,10 @@ import { ConsulDiscoveryService } from '../consul/consul.service';
 
 interface BillingGrpc {
   CreateInvoice(data: any): any;
-  FindAll(empty: {}): any;
+  ListInvoices(empty: {}): any;
+  GetInvoice(data: any): any;
+  ProcessPayment(data: any): any;
+  GetInvoicePayments(data: any): any;
 }
 
 @Controller('billing')
@@ -61,19 +64,55 @@ export class BillingGatewayController implements OnModuleInit {
     }
   }
 
-  @Post()
+  @Post('invoices')
   async createInvoice(@Body() body: any) {
     try {
-      return await lastValueFrom(
+      this.logger.log('Creating invoice with data:', body);
+      
+      if (!this.billingService) {
+        throw new Error('Billing service not available');
+      }
+
+      const result = await lastValueFrom(
         this.billingService.CreateInvoice(body).pipe(
           timeout(10000),
           retry(3)
         )
       );
+      return result;
     } catch (error) {
       this.logger.error('Failed to create invoice:', error);
       throw error;
     }
   }
 
+  @Get()
+  async findAllInvoices(@Query('customerId') customerId: string) {
+    try {
+      return await lastValueFrom(
+        this.billingService.ListInvoices({customerId}).pipe(
+          timeout(10000),
+          retry(3)
+        )
+      );
+    } catch (error) {
+      this.logger.error('Failed to find all invoices:', error);
+      throw error;
+    }
+  }
+
+  @Get(':id')
+  async findOneInvoice(@Query('id') id: string) {
+    try {
+      return await lastValueFrom(
+        this.billingService.GetInvoice({ id }).pipe(
+          timeout(10000),
+          retry(3)
+        )
+      );
+    } catch (error) {
+      this.logger.error('Failed to find invoice:', error);
+      throw error;
+    }
+  }
 }

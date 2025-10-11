@@ -191,8 +191,8 @@ export class BillingController {
     }
   }
 
-  @GrpcMethod('BillingService', 'HealthCheck')
-  async healthCheck() {
+  @GrpcMethod('BillingService', 'GetHealthResponse')
+  async getHealthResponse() {
     try {
       const count = await this.billingService['invoiceModel'].count();
       return {

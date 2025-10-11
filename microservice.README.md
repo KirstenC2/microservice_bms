@@ -243,3 +243,29 @@ Both methods are valid, but they serves for different needs.
 - used when the microservice is not registered in the microservice registry.
 - can be configured during runtime
 - suitable for cases those need environment variables or dynamic configuration during runtime 
+
+## gRPC
+### What is gRPC?
+gRPC is a high-performance, open-source universal RPC framework that runs in any environment. It uses HTTP/2 and the Protocol Buffers (protobuf) language to define and implement service interfaces.
+
+### How to test gRPC from postman?
+1. Open Postman
+2. Select gRPC
+3. Enter the URL of the gRPC server
+4. import the .proto file
+5. put in the message body as required
+6. click `invoke`
+
+### Image of gRPC import proto file
+
+![postman-grpc-import-proto](images/postman-import-proto.png)
+
+
+### Image of gRPC request
+
+![postman-grpc](images/postman-grpc.png)
+
+
+
+
+
