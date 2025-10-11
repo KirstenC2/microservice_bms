@@ -1,0 +1,74 @@
+// proto/billing.proto
+syntax = "proto3";
+
+package billing;
+
+service BillingService {
+  rpc CreateInvoice (CreateInvoiceRequest) returns (Invoice);
+  rpc GetInvoice (GetInvoiceRequest) returns (Invoice);
+  rpc ListInvoices (ListInvoicesRequest) returns (ListInvoicesResponse);
+  rpc ProcessPayment (ProcessPaymentRequest) returns (Payment);
+}
+
+message CreateInvoiceRequest {
+  string booking_id = 1;
+  string customer_id = 2;
+  string customer_email = 3;
+  double amount = 4;
+  string currency = 5;
+  string due_date = 6;
+  map<string, string> metadata = 7;
+}
+
+message GetInvoiceRequest {
+  string invoice_id = 1;
+}
+
+message ListInvoicesRequest {
+  string customer_id = 1;
+  int32 page = 2;
+  int32 limit = 3;
+}
+
+message ProcessPaymentRequest {
+  string invoice_id = 1;
+  string payment_method = 2;
+  double amount = 3;
+  string currency = 4;
+  string transaction_id = 5;
+  map<string, string> payment_details = 6;
+}
+
+message Invoice {
+  string invoice_id = 1;
+  string booking_id = 2;
+  string customer_id = 3;
+  string customer_email = 4;
+  double amount = 5;
+  string currency = 6;
+  string status = 7;
+  string due_date = 8;
+  string issued_date = 9;
+  string created_at = 10;
+  map<string, string> metadata = 11;
+}
+
+message ListInvoicesResponse {
+  repeated Invoice invoices = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message Payment {
+  string payment_id = 1;
+  string invoice_id = 2;
+  double amount = 3;
+  string currency = 4;
+  string status = 5;
+  string payment_method = 6;
+  string transaction_id = 7;
+  string paid_at = 8;
+  string created_at = 9;
+  map<string, string> payment_details = 10;
+}

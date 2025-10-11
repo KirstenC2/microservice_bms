@@ -69,6 +69,22 @@ services:
       timeout: 5s
       retries: 5
 
+  billing-service:
+    build:
+      context: ..
+      dockerfile: services/billing-service/Dockerfile
+    ports:
+      - "50052:50052"
+    depends_on:
+      - postgres
+    env_file:
+      - ../services/billing-service/.env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:50052/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   pgdata:
   consul-data:
