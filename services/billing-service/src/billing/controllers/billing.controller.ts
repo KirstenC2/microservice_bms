@@ -142,17 +142,20 @@ export class BillingController {
     try {
       const payment = await this.billingService.processPayment(data);
 
+      // console.log('Payment data:', payment);
+
+      let paymentData = payment.get({ plain: true });
       return {
-        paymentId: payment.paymentId,
+        paymentId: paymentData.paymentId,
         invoiceId: data.invoiceId,
-        amount: parseFloat(payment.amount as any),
-        currency: payment.currency,
-        status: payment.status,
-        paymentMethod: payment.paymentMethod,
-        transactionId: payment.transactionId,
-        paidAt: payment.paidAt,
-        createdAt: payment.createdAt,
-        paymentDetails: payment.paymentDetails,
+        amount: parseFloat(paymentData.amount as any),
+        currency: paymentData.currency,
+        status: paymentData.status,
+        paymentMethod: paymentData.paymentMethod,
+        transactionId: paymentData.transactionId,
+        paidAt: paymentData.paidAt,
+        createdAt: paymentData.createdAt,
+        paymentDetails: paymentData.paymentDetails,
       };
     } catch (error) {
       console.error('Error in ProcessPayment:', error);
@@ -166,17 +169,21 @@ export class BillingController {
       const payments = await this.billingService.getInvoicePayments(data.invoiceId);
 
       return {
-        payments: payments.map(payment => ({
-          paymentId: payment.paymentId,
-          amount: parseFloat(payment.amount as any),
-          currency: payment.currency,
-          status: payment.status,
-          paymentMethod: payment.paymentMethod,
-          transactionId: payment.transactionId,
-          paidAt: payment.paidAt,
-          createdAt: payment.createdAt,
-          paymentDetails: payment.paymentDetails,
-        })),
+        payments: payments.map(payment => {
+          let paymentData = payment.get({ plain: true });
+          return {
+            paymentId: paymentData.paymentId,
+            invoiceId: data.invoiceId,
+            amount: parseFloat(paymentData.amount as any),
+            currency: paymentData.currency,
+            status: paymentData.status,
+            paymentMethod: paymentData.paymentMethod,
+            transactionId: paymentData.transactionId,
+            paidAt: paymentData.paidAt,
+            createdAt: paymentData.createdAt,
+            paymentDetails: paymentData.paymentDetails,
+          };
+        }),
       };
     } catch (error) {
       console.error('Error in GetInvoicePayments:', error);
