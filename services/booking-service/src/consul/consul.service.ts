@@ -11,18 +11,16 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy {
       host: process.env.CONSUL_HOST || 'consul',
       port: Number(process.env.CONSUL_PORT) || 8500,
     });
-    const serviceName = process.env.SERVICE_NAME || 'booking-service';
-    this.serviceId = `${serviceName}-${Math.random().toString(36).slice(2,7)}`;
+    this.serviceId = `booking-service-${require('os').hostname()}`;
   }
 
   async onModuleInit() {
-    const serviceName = process.env.SERVICE_NAME || 'booking-service';
     const servicePort = Number(process.env.SERVICE_PORT) || 50051;
     const serviceHost = process.env.SERVICE_HOST || 'booking-service';
 
     await this.consul.agent.service.register({
       id: this.serviceId,
-      name: serviceName,
+      name: 'booking-service',
       address: serviceHost,
       port: servicePort,
       check: {

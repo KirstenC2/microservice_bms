@@ -85,7 +85,7 @@ From above example, we can see that the consul service is registered to consul w
 
 The `OnModuleInit` and `OnModuleDestroy` are NestJS lifecycle hooks that are called when the module is initialized and destroyed, respectively.
 
-# Chapter 2: Consul in Docker
+# Chapter 2: Consul on Docker
 
 ``` Docker
 consul:
@@ -98,4 +98,23 @@ consul:
     volumes:
       - consul-data:/consul/data
 ```
+
+
+# Chapter 3: Deregistration in consul
+
+While container in docker is destroyed, the consul service will not automatically deregister the service from consul. Therefore we need to manually deregister the service from consul.
+
+Manually deregister the service from consul:
+
+```bash
+consul agent -deregister <service_id>
+```
+or
+
+```curl
+http://localhost:8500/v1/agent/service/deregister/<service_id>
+```
+
+Automatically deregister the service from consul when the container is destroyed:
+
 
