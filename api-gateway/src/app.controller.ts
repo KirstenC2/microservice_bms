@@ -3,8 +3,6 @@ import {
   Controller, 
   Get, 
   Post, 
-  Put, 
-  Delete, 
   Body, 
   Param, 
   Query, 
@@ -19,47 +17,10 @@ export class AppController {
 
   // 服务地址配置
   private readonly services = {
-    user: 'http://localhost:3001',
-    room: 'http://localhost:3002',
-    booking: 'http://localhost:3003',
+    booking: 'http://booking-service:50051',
   };
 
-  // ========== 用户相关路由 ==========
-  @Get('users')
-  async getUsers() {
-    return this.forwardRequest('user', 'GET', '/users');
-  }
 
-  @Get('users/:id')
-  async getUser(@Param('id') id: string) {
-    return this.forwardRequest('user', 'GET', `/users/${id}`);
-  }
-
-  @Post('users')
-  async createUser(@Body() data: any) {
-    return this.forwardRequest('user', 'POST', '/users', data);
-  }
-
-  // ========== 会议室相关路由 ==========
-  @Get('rooms')
-  async getRooms() {
-    return this.forwardRequest('room', 'GET', '/rooms');
-  }
-
-  @Get('rooms/:id')
-  async getRoom(@Param('id') id: string) {
-    return this.forwardRequest('room', 'GET', `/rooms/${id}`);
-  }
-
-  @Post('rooms')
-  async createRoom(@Body() data: any) {
-    return this.forwardRequest('room', 'POST', '/rooms', data);
-  }
-
-  @Get('rooms/search')
-  async searchRooms(@Query('q') query: string) {
-    return this.forwardRequest('room', 'GET', `/rooms/search?q=${query}`);
-  }
 
   // ========== 预约相关路由 ==========
   @Get('bookings')

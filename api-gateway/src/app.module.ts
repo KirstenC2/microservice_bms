@@ -4,6 +4,8 @@ import { join } from 'path';
 import { existsSync } from 'fs';
 import { BookingGatewayController } from './booking/booking.controller';
 import { HealthController } from './health/health.controller';
+import { ConsulDiscoveryService } from './consul/consul.service';
+import { ConfigService } from '@nestjs/config';
 
 function resolveProtoPath(): string {
   const fromEnv = process.env.PROTO_PATH;
@@ -38,5 +40,6 @@ function resolveProtoPath(): string {
     ])
   ],
   controllers: [BookingGatewayController,HealthController],
+  providers: [ConsulDiscoveryService, ConfigService],
 })
 export class AppModule {}

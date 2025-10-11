@@ -8,20 +8,25 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy {
 
   constructor() {
     this.consul = new Consul({
-      host: process.env.CONSUL_HOST || 'localhost',
+      host: process.env.CONSUL_HOST || 'consul',
       port: Number(process.env.CONSUL_PORT) || 8500,
     });
-    this.serviceId = `${process.env.SERVICE_NAME}-${Math.random().toString(36).slice(2,7)}`;
+    const serviceName = process.env.SERVICE_NAME || 'booking-service';
+    this.serviceId = `${serviceName}-${Math.random().toString(36).slice(2,7)}`;
   }
 
   async onModuleInit() {
+    const serviceName = process.env.SERVICE_NAME || 'booking-service';
+    const servicePort = Number(process.env.SERVICE_PORT) || 50051;
+    const serviceHost = process.env.SERVICE_HOST || 'booking-service';
+
     await this.consul.agent.service.register({
       id: this.serviceId,
-      name: process.env.SERVICE_NAME,
-      address: process.env.HOSTNAME,
-      port: Number(process.env.SERVICE_PORT),
+      name: serviceName,
+      address: serviceHost,
+      port: servicePort,
       check: {
-        tcp: `${process.env.HOSTNAME}:${process.env.SERVICE_PORT}`,
+        tcp: `${serviceHost}:${servicePort}`,
         interval: '10s',
         timeout: '5s',
       },

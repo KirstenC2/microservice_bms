@@ -224,3 +224,22 @@ export class BookingClientService implements OnModuleInit {
   }
 }
 ```
+
+## ClientProxyFactory
+
+### What is ClientProxyFactory?
+
+One of the methods to create a client proxy for a microservice.
+
+another one would be **ClientGrpc.register**
+
+Both methods are valid, but they serves for different needs.
+
+1. **ClientGrpc.register** 
+- used when the microservice is registered in the microservice registry.
+- the configuration would be hardcoded
+
+2. **ClientProxyFactory.create**
+- used when the microservice is not registered in the microservice registry.
+- can be configured during runtime
+- suitable for cases those need environment variables or dynamic configuration during runtime 
