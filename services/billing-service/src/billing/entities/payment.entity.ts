@@ -19,15 +19,14 @@ export class Payment extends Model<Payment> {
     allowNull: false,
     unique: true,
   })
-  payment_id: string;
+  paymentId: string;
 
   @ForeignKey(() => Invoice)
   @Column({
     type: DataType.UUID,
-    allowNull: false,
-    field: 'invoice_id',
+    allowNull: false
   })
-  invoice_id: string;
+  invoiceId: string;
 
   @Column({
     type: DataType.DECIMAL(10, 2),
@@ -51,37 +50,23 @@ export class Payment extends Model<Payment> {
     type: DataType.STRING,
     allowNull: false,
   })
-  payment_method: string;
+  paymentMethod: string;
 
   @Column({
-    type: DataType.STRING,
-    field: 'transaction_id',
+    type: DataType.STRING
   })
-  transaction_id: string;
+  transactionId: string;
 
   @Column({
     type: DataType.JSONB,
     defaultValue: {},
   })
-  payment_details: Record<string, any>;
+  paymentDetails: Record<string, any>;
 
   @Column({
-    type: DataType.DATE,
-    field: 'paid_at',
+    type: DataType.DATE
   })
-  paid_at: Date;
-
-  @CreatedAt
-  @Column({
-    field: 'created_at',
-  })
-  created_at: Date;
-
-  @UpdatedAt
-  @Column({
-    field: 'updated_at',
-  })
-  updated_at: Date;
+  paidAt: Date;
 
   @BelongsTo(() => Invoice)
   invoice: Invoice;

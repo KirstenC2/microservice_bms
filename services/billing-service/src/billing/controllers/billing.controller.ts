@@ -2,6 +2,9 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { BillingService } from '../services/billing.service';
+import { ListInvoicesDto, GetInvoiceDto, GetInvoicePaymentsDto } from '../dtos/list-invoices.dto';
+// import { CreateInvoiceDto } from '../dtos/create-invoice.dto';
+import { ProcessPaymentDto } from '../dtos/process-payment.dto';
 
 @Controller()
 export class BillingController {
@@ -10,59 +13,60 @@ export class BillingController {
   @GrpcMethod('BillingService', 'CreateInvoice')
   async createInvoice(data: any) {
     try {
+      console.log('Received invoice data:', data);
+      
       const invoice = await this.billingService.createInvoice(data);
       
+
       return {
-        invoice_id: invoice.invoice_id,
-        booking_id: invoice.booking_id,
-        customer_id: invoice.customer_id,
-        customer_email: invoice.customer_email,
+        invoiceId: invoice.invoiceId,
+        bookingId: invoice.bookingId,
+        customerId: invoice.customerId,
+        customerEmail: invoice.customerEmail,
         amount: parseFloat(invoice.amount as any),
         currency: invoice.currency,
         status: invoice.status,
-        due_date: invoice.due_date.toISOString(),
-        issued_date: invoice.issued_date.toISOString(),
-        created_at: invoice.created_at.toISOString(),
+        dueDate: invoice.dueDate || null,
+        issuedDate: invoice.issuedDate || null,
+        createdAt: invoice.createdAt || null,
         metadata: invoice.metadata,
       };
     } catch (error) {
-      // Log error and rethrow for gRPC error handling
       console.error('Error in CreateInvoice:', error);
       throw error;
     }
   }
 
   @GrpcMethod('BillingService', 'GetInvoice')
-  async getInvoice(data: { invoice_id: string }) {
+  async getInvoice(data: any) {
     try {
-      const invoice = await this.billingService.getInvoice(data.invoice_id);
-      
+      const invoice = await this.billingService.getInvoice(data.invoiceId);
+      console.log('Invoice data:', invoice);
       const response: any = {
-        invoice_id: invoice.invoice_id,
-        booking_id: invoice.booking_id,
-        customer_id: invoice.customer_id,
-        customer_email: invoice.customer_email,
+        invoiceId: invoice.invoiceId,
+        bookingId: invoice.bookingId,
+        customerId: invoice.customerId,
+        customerEmail: invoice.customerEmail,
         amount: parseFloat(invoice.amount as any),
         currency: invoice.currency,
         status: invoice.status,
-        due_date: invoice.due_date.toISOString(),
-        issued_date: invoice.issued_date.toISOString(),
-        created_at: invoice.created_at.toISOString(),
-        updated_at: invoice.updated_at.toISOString(),
+        dueDate: invoice.dueDate,
+        issuedDate: invoice.issuedDate,
+        createdAt: invoice.createdAt,
+        updatedAt: invoice.updatedAt,
         metadata: invoice.metadata,
       };
 
-      // Include payments if they exist
       if (invoice.payments && invoice.payments.length > 0) {
         response.payments = invoice.payments.map(payment => ({
-          payment_id: payment.payment_id,
+          paymentId: payment.paymentId,
           amount: parseFloat(payment.amount as any),
           currency: payment.currency,
           status: payment.status,
-          payment_method: payment.payment_method,
-          transaction_id: payment.transaction_id,
-          paid_at: payment.paid_at ? payment.paid_at.toISOString() : null,
-          created_at: payment.created_at.toISOString(),
+          paymentMethod: payment.paymentMethod,
+          transactionId: payment.transactionId,
+          paidAt: payment.paidAt,
+          createdAt: payment.createdAt,
         }));
       }
 
@@ -74,28 +78,27 @@ export class BillingController {
   }
 
   @GrpcMethod('BillingService', 'ListInvoices')
-  async listInvoices(data: { customer_id: string; page: number; limit: number }) {
+  async listInvoices(data: any) {
     try {
       const result = await this.billingService.listInvoices(
-        data.customer_id,
+        data.customerId,
         data.page || 1,
         data.limit || 10,
       );
       
       return {
         invoices: result.invoices.map(invoice => ({
-          invoice_id: invoice.invoice_id,
-          booking_id: invoice.booking_id,
-          customer_id: invoice.customer_id,
-          customer_email: invoice.customer_email,
+          invoiceId: invoice.invoiceId,
+          bookingId: invoice.bookingId,
+          customerId: invoice.customerId,
+          customerEmail: invoice.customerEmail,
           amount: parseFloat(invoice.amount as any),
           currency: invoice.currency,
           status: invoice.status,
-          due_date: invoice.due_date.toISOString(),
-          issued_date: invoice.issued_date.toISOString(),
-          created_at: invoice.created_at.toISOString(),
-          // Include payment status summary
-          payment_status: invoice.payments && invoice.payments.length > 0 ? 
+          dueDate: invoice.dueDate,
+          issuedDate: invoice.issuedDate,
+          createdAt: invoice.createdAt,
+          paymentStatus: invoice.payments && invoice.payments.length > 0 ? 
             invoice.payments[0].status : 'unpaid',
         })),
         total: result.total,
@@ -109,28 +112,21 @@ export class BillingController {
   }
 
   @GrpcMethod('BillingService', 'ProcessPayment')
-  async processPayment(data: { 
-    invoice_id: string; 
-    payment_method: string; 
-    amount: number; 
-    currency: string;
-    transaction_id?: string;
-    payment_details?: { [key: string]: string };
-  }) {
+  async processPayment(data: any) {
     try {
       const payment = await this.billingService.processPayment(data);
       
       return {
-        payment_id: payment.payment_id,
-        invoice_id: data.invoice_id,
+        paymentId: payment.paymentId,
+        invoiceId: data.invoiceId,
         amount: parseFloat(payment.amount as any),
         currency: payment.currency,
         status: payment.status,
-        payment_method: payment.payment_method,
-        transaction_id: payment.transaction_id,
-        paid_at: payment.paid_at ? payment.paid_at.toISOString() : null,
-        created_at: payment.created_at.toISOString(),
-        payment_details: payment.payment_details,
+        paymentMethod: payment.paymentMethod,
+        transactionId: payment.transactionId,
+        paidAt: payment.paidAt,
+        createdAt: payment.createdAt,
+        paymentDetails: payment.paymentDetails,
       };
     } catch (error) {
       console.error('Error in ProcessPayment:', error);
@@ -138,24 +134,22 @@ export class BillingController {
     }
   }
 
-  // Additional useful methods
-
   @GrpcMethod('BillingService', 'GetInvoicePayments')
-  async getInvoicePayments(data: { invoice_id: string }) {
+  async getInvoicePayments(data: any) {
     try {
-      const payments = await this.billingService.getInvoicePayments(data.invoice_id);
+      const payments = await this.billingService.getInvoicePayments(data.invoiceId);
       
       return {
         payments: payments.map(payment => ({
-          payment_id: payment.payment_id,
+          paymentId: payment.paymentId,
           amount: parseFloat(payment.amount as any),
           currency: payment.currency,
           status: payment.status,
-          payment_method: payment.payment_method,
-          transaction_id: payment.transaction_id,
-          paid_at: payment.paid_at ? payment.paid_at.toISOString() : null,
-          created_at: payment.created_at.toISOString(),
-          payment_details: payment.payment_details,
+          paymentMethod: payment.paymentMethod,
+          transactionId: payment.transactionId,
+          paidAt: payment.paidAt,
+          createdAt: payment.createdAt,
+          paymentDetails: payment.paymentDetails,
         })),
       };
     } catch (error) {
@@ -167,7 +161,6 @@ export class BillingController {
   @GrpcMethod('BillingService', 'HealthCheck')
   async healthCheck() {
     try {
-      // Simple health check - try to count invoices
       const count = await this.billingService['invoiceModel'].count();
       return {
         status: 'SERVING',

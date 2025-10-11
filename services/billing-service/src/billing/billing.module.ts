@@ -12,5 +12,6 @@ import { Payment } from './entities/payment.entity';
   ],
   controllers: [BillingController],
   providers: [BillingService],
+  exports: [BillingService],
 })
 export class BillingModule {}

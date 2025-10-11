@@ -1,5 +1,5 @@
 // billing/src/entities/invoice.entity.ts
-import { Table, Column, Model, DataType, CreatedAt, UpdatedAt, HasMany } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, CreatedAt, UpdatedAt, HasMany, AllowNull } from 'sequelize-typescript';
 import { Payment } from '../entities/payment.entity';
 
 @Table({
@@ -19,24 +19,24 @@ export class Invoice extends Model<Invoice> {
     allowNull: false,
     unique: true,
   })
-  invoice_id: string;
+  invoiceId: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-  booking_id: string;
+  bookingId: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-  customer_id: string;
+  customerId: string;
 
   @Column({
     type: DataType.STRING,
   })
-  customer_email: string;
+  customerEmail: string;
 
   @Column({
     type: DataType.DECIMAL(10, 2),
@@ -59,33 +59,20 @@ export class Invoice extends Model<Invoice> {
   @Column({
     type: DataType.DATE,
     allowNull: false,
-    field: 'due_date',
   })
-  due_date: Date;
+  dueDate: Date;
 
   @Column({
     type: DataType.DATE,
-    field: 'issued_date',
   })
-  issued_date: Date;
+  issuedDate: Date;
 
   @Column({
     type: DataType.JSONB,
+    allowNull: true,
     defaultValue: {},
   })
   metadata: Record<string, any>;
-
-  @CreatedAt
-  @Column({
-    field: 'created_at',
-  })
-  created_at: Date;
-
-  @UpdatedAt
-  @Column({
-    field: 'updated_at',
-  })
-  updated_at: Date;
 
   @HasMany(() => Payment)
   payments: Payment[];

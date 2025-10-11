@@ -11,45 +11,51 @@ service BillingService {
 }
 
 message CreateInvoiceRequest {
-  string booking_id = 1;
-  string customer_id = 2;
-  string customer_email = 3;
+  string bookingId = 1;
+  string customerId = 2;
+  string customerEmail = 3;
   double amount = 4;
   string currency = 5;
-  string due_date = 6;
+  string dueDate = 6;
   map<string, string> metadata = 7;
 }
 
+message GetHealthRequest {}
+
+message GetHealthResponse {
+  string status = 1;
+}
+
 message GetInvoiceRequest {
-  string invoice_id = 1;
+  string invoiceId = 1;
 }
 
 message ListInvoicesRequest {
-  string customer_id = 1;
+  string customerId = 1;
   int32 page = 2;
   int32 limit = 3;
 }
 
 message ProcessPaymentRequest {
-  string invoice_id = 1;
-  string payment_method = 2;
+  string invoiceId = 1;
+  string paymentMethod = 2;
   double amount = 3;
   string currency = 4;
-  string transaction_id = 5;
-  map<string, string> payment_details = 6;
+  string transactionId = 5;
+  map<string, string> paymentDetails = 6;
 }
 
 message Invoice {
-  string invoice_id = 1;
-  string booking_id = 2;
-  string customer_id = 3;
-  string customer_email = 4;
+  string invoiceId = 1;
+  string bookingId = 2;
+  string customerId = 3;
+  string customerEmail = 4;
   double amount = 5;
   string currency = 6;
   string status = 7;
-  string due_date = 8;
-  string issued_date = 9;
-  string created_at = 10;
+  string dueDate = 8;
+  string issuedDate = 9;
+  string createdAt = 10;
   map<string, string> metadata = 11;
 }
 
@@ -61,14 +67,14 @@ message ListInvoicesResponse {
 }
 
 message Payment {
-  string payment_id = 1;
-  string invoice_id = 2;
+  string paymentId = 1;
+  string invoiceId = 2;
   double amount = 3;
   string currency = 4;
   string status = 5;
-  string payment_method = 6;
-  string transaction_id = 7;
-  string paid_at = 8;
-  string created_at = 9;
-  map<string, string> payment_details = 10;
+  string paymentMethod = 6;
+  string transactionId = 7;
+  string paidAt = 8;
+  string createdAt = 9;
+  map<string, string> paymentDetails = 10;
 }

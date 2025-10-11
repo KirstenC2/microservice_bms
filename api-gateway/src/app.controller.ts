@@ -18,6 +18,7 @@ export class AppController {
   // 服务地址配置
   private readonly services = {
     booking: 'http://booking-service:50051',
+    billing: 'http://billing-service:50052',
   };
 
 
@@ -60,6 +61,29 @@ export class AppController {
       'GET', 
       `/bookings/availability/${roomId}?startTime=${startTime}&endTime=${endTime}`
     );
+  }
+
+
+  // ========== 收银相关路由 ==========
+  @Get('billing')
+  async getBilling(@Query() query: any) {
+    const queryString = new URLSearchParams(query).toString();
+    return this.forwardRequest('billing', 'GET', `/billing?${queryString}`);
+  }
+
+  @Get('billing/:id')
+  async getBillingById(@Param('id') id: string) {
+    return this.forwardRequest('billing', 'GET', `/billing/${id}`);
+  }
+
+  @Post('billing')
+  async createInvoice(@Body() data: any) {
+    return this.forwardRequest('billing', 'POST', '/billing', data);
+  }
+
+  @Post('billing/:id/cancel')
+  async cancelInvoice(@Param('id') id: string, @Body() data: any) {
+    return this.forwardRequest('billing', 'POST', `/billing/${id}/cancel`, data);
   }
 
   // ========== 私有方法：转发请求 ==========
