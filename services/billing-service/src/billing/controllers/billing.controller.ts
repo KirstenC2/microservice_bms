@@ -8,15 +8,15 @@ import { ProcessPaymentDto } from '../dtos/process-payment.dto';
 
 @Controller()
 export class BillingController {
-  constructor(private readonly billingService: BillingService) {}
+  constructor(private readonly billingService: BillingService) { }
 
   @GrpcMethod('BillingService', 'CreateInvoice')
   async createInvoice(data: any) {
     try {
       console.log('Received invoice data:', data);
-      
+
       const invoice = await this.billingService.createInvoice(data);
-      
+
 
       return {
         invoiceId: invoice.invoiceId,
@@ -85,22 +85,30 @@ export class BillingController {
         data.page || 1,
         data.limit || 10,
       );
-      
+
+      // Transform Sequelize instances to plain objects with proper values
+      const transformedInvoices = result.invoices.map(invoice => {
+        // Convert to plain object and handle dates properly
+        const plainInvoice = invoice.get({ plain: true });
+
+        return {
+          invoiceId: plainInvoice.invoiceId,
+          bookingId: plainInvoice.bookingId,
+          customerId: plainInvoice.customerId,
+          customerEmail: plainInvoice.customerEmail,
+          amount: Number(plainInvoice.amount),
+          currency: plainInvoice.currency,
+          status: plainInvoice.status,
+          dueDate: plainInvoice.dueDate ? new Date(plainInvoice.dueDate).toISOString() : null,
+          issuedDate: plainInvoice.issuedDate ? new Date(plainInvoice.issuedDate).toISOString() : null,
+          createdAt: plainInvoice.createdAt ? new Date(plainInvoice.createdAt).toISOString() : null,
+          updatedAt: plainInvoice.updatedAt ? new Date(plainInvoice.updatedAt).toISOString() : null,
+          metadata: plainInvoice.metadata || {},
+        };
+      });
+
       return {
-        invoices: result.invoices.map(invoice => ({
-          invoiceId: invoice.invoiceId,
-          bookingId: invoice.bookingId,
-          customerId: invoice.customerId,
-          customerEmail: invoice.customerEmail,
-          amount: parseFloat(invoice.amount as any),
-          currency: invoice.currency,
-          status: invoice.status,
-          dueDate: invoice.dueDate,
-          issuedDate: invoice.issuedDate,
-          createdAt: invoice.createdAt,
-          paymentStatus: invoice.payments && invoice.payments.length > 0 ? 
-            invoice.payments[0].status : 'unpaid',
-        })),
+        invoices: transformedInvoices,
         total: result.total,
         page: data.page || 1,
         limit: data.limit || 10,
@@ -115,7 +123,7 @@ export class BillingController {
   async processPayment(data: any) {
     try {
       const payment = await this.billingService.processPayment(data);
-      
+
       return {
         paymentId: payment.paymentId,
         invoiceId: data.invoiceId,
@@ -138,7 +146,7 @@ export class BillingController {
   async getInvoicePayments(data: any) {
     try {
       const payments = await this.billingService.getInvoicePayments(data.invoiceId);
-      
+
       return {
         payments: payments.map(payment => ({
           paymentId: payment.paymentId,
